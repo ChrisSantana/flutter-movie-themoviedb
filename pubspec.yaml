@@ -1,0 +1,36 @@
+name: fluttermovie
+description: Aplicação desenvolvida sob o framework flutter para consumir e exibir filmes da API The Movie Db
+
+version: 0.1.0+1
+
+environment:
+  sdk: ">=2.7.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  animated_text_kit: 2.2.0
+  cupertino_icons: 0.1.3
+  dio: 3.0.10
+  intl: ^0.16.1
+  font_awesome_flutter: 8.8.1
+  jwt_decode: 0.1.0
+  package_info: 0.4.1
+  provider: 4.3.2
+  rxdart: 0.24.1
+  shared_preferences: 0.5.8
+  transparent_image: 1.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/img/
+    - assets/source/
