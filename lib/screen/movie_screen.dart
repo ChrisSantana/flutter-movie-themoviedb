@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:fluttermovie/enum/enum_app_retorno.dart';
 import 'package:fluttermovie/enum/enum_screen.dart';
@@ -19,6 +17,11 @@ class PrincipalScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBarWidget(
         title: Text(bloc.getScreenModel(ScreenEnum.movie)?.name ?? ''),
+        showIconSearch: true,
+        hintTextSearch: 'Informe o nome do filme',
+        onListener: (value){
+          print(value);
+        },
       ),
       body: StreamBuilder<AppRetornoModel>(
         stream: bloc.streamRetornoAPI,
@@ -43,6 +46,7 @@ class PrincipalScreen extends StatelessWidget {
           return SizedBox.shrink();
         },
       ),
+      bottomNavigationBar: _buildBottomNavigator(context),
     );
   }
 
@@ -66,6 +70,38 @@ class PrincipalScreen extends StatelessWidget {
           onPressed: bloc.requestAPI,
         ),
       ),
+    );
+  }
+
+  Widget _buildBottomNavigator(BuildContext context) {
+    return BottomAppBar(
+      elevation: 10,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            _buildFlatButton(context, 'Anterior', (){}),
+            _buildFlatButton(context, 'Próximo', (){}),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFlatButton(BuildContext context, String titulo, Function onPressed) {
+    return FlatButton(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(30),
+        side: BorderSide(
+          width: 0.5,
+        ),
+      ),
+      child: Text(
+        titulo,
+      ),
+      onPressed: onPressed,
     );
   }
 }

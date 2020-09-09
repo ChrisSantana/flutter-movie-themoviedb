@@ -35,7 +35,7 @@ class MovieModel {
   });
 
   String get urlImgPoster {
-    return join(Util.instance.urlBaseImg, posterPath);
+    return join(Util.instance.urlBaseImg, posterPath.replaceAll('/', ''));
   }
 
   String get urlImBackdrop {

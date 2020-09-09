@@ -55,7 +55,18 @@ class Util {
     return 'Tentar novamente';
   }
 
-  /// Retorna a data no formato BR.
+  /// Formatacao de numero
+  String formatDouble(double value){
+    final formatter = NumberFormat('#,#0.0', 'pt_BR');
+    try{
+      return formatter.format(value);
+    } catch (e) {
+      print(e);
+    }
+    return '0';
+  }
+
+  /// Retorna a data no formato BR
   String retornarDataPadraoBR(DateTime dateTime){
     try {
       return DateFormat.yMd('pt_BR').format(dateTime);

@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 
 import '../bloc/application_bloc.dart';
 
-class SobreScreen extends StatelessWidget {
+class FavoritoScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bloc = Provider.of<ApplicationBloc>(context);
