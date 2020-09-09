@@ -10,7 +10,7 @@ import 'package:provider/provider.dart';
 
 import '../bloc/application_bloc.dart';
 
-class PrincipalScreen extends StatelessWidget {
+class MovieScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bloc = Provider.of<ApplicationBloc>(context);

@@ -3,6 +3,8 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:fluttermovie/library/util.dart';
 import 'package:fluttermovie/model/movie_model.dart';
+import 'package:fluttermovie/repository/app_service.dart';
+import 'package:fluttermovie/tab/movie_tab.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class MovieTile extends StatelessWidget {
@@ -40,7 +42,7 @@ class MovieTile extends StatelessWidget {
         ),
       ),
       onTap: (){
-        //// ir para detalhe
+        AppService.instance.navigateTo(MovieTab(movieModel));
       },
     );
   }

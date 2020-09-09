@@ -14,7 +14,7 @@ class HomeScreen extends StatelessWidget {
         physics: NeverScrollableScrollPhysics(),
         controller: appBloc.pageController,
         children: <Widget>[
-          PrincipalScreen(),
+          MovieScreen(),
           FavoritoScreen(),
         ],
       ),
