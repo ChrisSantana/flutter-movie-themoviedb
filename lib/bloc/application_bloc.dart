@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:fluttermovie/enum/enum_screen.dart';
+import 'package:fluttermovie/library/exception_helper_error.dart';
 import 'package:fluttermovie/model/exception_model.dart';
+import 'package:fluttermovie/model/movie_model.dart';
+import 'package:fluttermovie/model/result_model.dart';
 import 'package:fluttermovie/model/screen_model.dart';
 import 'package:fluttermovie/repository/app_service.dart';
 import 'package:fluttermovie/repository/movie_service.dart';
 import 'package:fluttermovie/screen/home_screen.dart';
+import 'package:fluttermovie/widget/geral/show_dialog_helper.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../enum/enum_app_retorno.dart';
 import '../enum/enum_theme.dart';
@@ -20,6 +24,11 @@ const _keyTheme = 'key_thema_user';
 class ApplicationBloc implements Bloc {
   PageController get pageController { return _pageController; }
   PageController _pageController;
+
+  List<MovieModel> get listMovie {
+    final value = _controllerRetornoAPI.value?.data;
+    return value != null && value is ResultModel ? value.movies : [];
+  }
 
   BehaviorSubject<AppRetornoModel> _controllerRetornoAPI;
   Function(AppRetornoModel) get _changeAppRetorno { return _controllerRetornoAPI.add; }
@@ -42,10 +51,10 @@ class ApplicationBloc implements Bloc {
     _controllerBottomNavigatorBar.listen(_handlerNavigatorBar);
     _loadTheme().then(attTheme);
 
-    init();
+    requestAPI();
   }
 
-  void init() async {
+  void requestAPI() async {
     try {
       _changeAppRetorno(AppRetornoModel(state: AppRetornoEnum.processando, data: _controllerRetornoAPI?.value?.data));
 
@@ -59,8 +68,11 @@ class ApplicationBloc implements Bloc {
       }
     } on ExceptionModel catch (e) {
       _changeAppRetorno(AppRetornoModel(state: AppRetornoEnum.erro, data: e.msg));
+      showToast(e.msg);
     } catch (_) {
-      _changeAppRetorno(AppRetornoModel(state: AppRetornoEnum.erro, data: 'Erro de requisição'));
+      final msg = ExceptionHelperError.instance.handlerErroConexao().msg;
+      _changeAppRetorno(AppRetornoModel(state: AppRetornoEnum.erro, data: msg));
+      showToast(msg);
     }
   }
 

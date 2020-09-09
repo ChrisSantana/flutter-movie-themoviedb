@@ -1,12 +1,13 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttermovie/library/util.dart';
 import 'package:provider/provider.dart';
 
 import '../../bloc/application_bloc.dart';
 import '../../enum/enum_app_retorno.dart';
 import '../../model/app_retorno_model.dart';
 
-class FactoryProgressSplashWidget extends StatelessWidget {
+class FactoryProgressMovieWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bloc = Provider.of<ApplicationBloc>(context);
@@ -37,7 +38,7 @@ class FactoryProgressSplashWidget extends StatelessWidget {
       duration: Duration(milliseconds: 1500),
       totalRepeatCount: 4,
       repeatForever: true,
-      text: ['FLUTTER MOVIE', 'O MELHOR DO CINEMA', 'NA PALMA', 'DA SUA MÃO', 'CONFIRA OS PRINCIPAIS', 'LANÇAMENTOS', 'E OS SEUS', 'FILMES FAVORITOS'],
+      text: Util.instance.animationSplash,
       textStyle: TextStyle(fontSize: 18),
       textAlign: TextAlign.center,
       displayFullTextOnTap: false,
@@ -50,8 +51,8 @@ class FactoryProgressSplashWidget extends StatelessWidget {
         height: 44,
         width: MediaQuery.of(context).size.height * 0.3,
         child: RaisedButton(
-          child: Text('Tentar novamente'),
-          onPressed: bloc.init,
+          child: Text(Util.instance.nameButtonSplash),
+          onPressed: bloc.requestAPI,
         ),
       ),
     );

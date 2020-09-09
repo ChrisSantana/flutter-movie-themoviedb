@@ -1,3 +1,4 @@
+import 'package:fluttermovie/repository/app_service.dart';
 import 'package:intl/intl.dart';
 
 class Util {
@@ -5,6 +6,7 @@ class Util {
   static Util get instance { return _util; }
   Util._internal();
 
+  /// Assets
   String get imgNotFound  { 
     return 'assets/img/img-not-found.png'; 
   }
@@ -21,6 +23,7 @@ class Util {
     return 'assets/source/key.txt';
   }
 
+  /// Base URL
   String get urlBase {
     return 'https://api.themoviedb.org/3/';
   }
@@ -31,7 +34,25 @@ class Util {
 
   /// por questao de otimizacao e por se tratar de um teste, vou sempre obter essa resolucao para as imagens
   String get urlBaseImg {
-    return 'https://image.tmdb.org/t/p/w500/';
+    return 'https://image.tmdb.org/t/p/w500';
+  }
+
+  /// Textos Screen
+  /// #SPLASH
+  List<String> get animationSplash {
+    return ['O MELHOR DO CINEMA', 'NA PALMA', 'DA SUA MÃO', 'CONFIRA OS PRINCIPAIS', 'LANÇAMENTOS', 'E OS SEUS', 'FILMES FAVORITOS'];
+  }
+
+  Future<String> get titleSplash async {
+    return await AppService.instance.getAppName();
+  }
+
+  String get introSplash {
+    return 'Acompanhe os principais lançamentos, veja detalhes e as principais informações dos filmes de sua preferência. Além disso, o aplicativo possibilita favoritá-los';
+  }
+
+  String get nameButtonSplash {
+    return 'Tentar novamente';
   }
 
   /// Retorna a data no formato BR.

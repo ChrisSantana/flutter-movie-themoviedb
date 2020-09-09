@@ -1,3 +1,4 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import './bloc/application_bloc.dart';
@@ -41,6 +42,8 @@ class MyApp extends StatelessWidget {
             GlobalCupertinoLocalizations.delegate,
           ],
           supportedLocales: [const Locale('pt', 'BR'),],
+          builder: BotToastInit(), //1. call BotToastInit
+          navigatorObservers: [BotToastNavigatorObserver()],
           debugShowCheckedModeBanner: false,
           theme: bloc.getThemeData(snapshot.data),
           navigatorKey: AppService.instance.navigatorKey,

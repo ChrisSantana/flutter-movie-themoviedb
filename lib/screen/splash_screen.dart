@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fluttermovie/widget/splash/factory_content_widget.dart';
+import 'package:fluttermovie/widget/splash/factory_progress_splash_widget.dart';
 import '../library/util.dart';
 
 class SplashScreen extends StatelessWidget {
@@ -50,19 +50,25 @@ class SplashScreen extends StatelessWidget {
   Widget _buildTitle() {
     return Positioned(
       top: 80,
-      child: Text(
-        'Flutter Movie',
-        style: TextStyle(
-          fontSize: 30,
-          shadows: [
-            BoxShadow(
-              color: Colors.black87,
-              spreadRadius: 1,
-              blurRadius: 7,
-              offset: Offset(0, 3), // changes position of shadow
+      child: FutureBuilder<String>(
+        future: Util.instance.titleSplash,
+        builder: (context, snapshot) {
+          final title = snapshot.data ?? '';
+          return Text(
+            title,
+            style: TextStyle(
+              fontSize: 30,
+              shadows: [
+                BoxShadow(
+                  color: Colors.black87,
+                  spreadRadius: 1,
+                  blurRadius: 7,
+                  offset: Offset(0, 3), // changes position of shadow
+                ),
+              ],
             ),
-          ],
-        ),
+          );
+        }
       ),
     );
   }
@@ -73,7 +79,7 @@ class SplashScreen extends StatelessWidget {
       child: Align(
         alignment: Alignment.center,
         child: Text(
-          'Acompanhe os principais lançamentos, veja detalhes e as principais informações dos filmes de sua preferência. Além disso, o aplicativo possibilita favoritá-los',
+          Util.instance.introSplash,
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: 14,

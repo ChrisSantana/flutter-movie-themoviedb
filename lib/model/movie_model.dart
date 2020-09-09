@@ -1,3 +1,6 @@
+import 'package:fluttermovie/library/util.dart';
+import 'package:path/path.dart';
+
 class MovieModel {
   final int id;
   final double popularity;
@@ -30,6 +33,14 @@ class MovieModel {
     this.overview,
     this.posterPath,
   });
+
+  String get urlImgPoster {
+    return join(Util.instance.urlBaseImg, posterPath);
+  }
+
+  String get urlImBackdrop {
+    return join(Util.instance.urlBaseImg, backdropPath.replaceAll('/', ''));
+  }
 
   factory MovieModel.fromMap(Map<String, dynamic> map) {
     return MovieModel(
