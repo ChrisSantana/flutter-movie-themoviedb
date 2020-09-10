@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttermovie/enum/enum_screen.dart';
 import 'package:fluttermovie/library/debounce_helper.dart';
 import 'package:fluttermovie/library/exception_helper_error.dart';
+import 'package:fluttermovie/library/genre_helper.dart';
 import 'package:fluttermovie/model/exception_model.dart';
 import 'package:fluttermovie/model/movie_model.dart';
 import 'package:fluttermovie/model/result_model.dart';
@@ -183,8 +184,11 @@ class ApplicationBloc implements Bloc {
 
   void handlerPesquisa(String query) {
     DebouncerHelper.run(() {
+      final queryInputada = (query != null && query.isNotEmpty);
+      final queryBlocInputada = (_query != null && _query.isNotEmpty);
+      final page = (queryBlocInputada && !queryInputada) || (queryInputada && !queryBlocInputada) ? 1 : getPage;
       _query = query;
-      requestAPI(getPage);
+      requestAPI(page);
     });
   }
 
@@ -217,6 +221,11 @@ class ApplicationBloc implements Bloc {
     MovieService.instance.saveOrDeleteFavorite(model).then((value){
       _changeAttFavorite(true);
     });
+  }
+
+  ///Generos
+  String getTextGenre(List<int> listId) {
+    return GenreHelper().getTextGenre(listId);
   }
 
   /// Thema

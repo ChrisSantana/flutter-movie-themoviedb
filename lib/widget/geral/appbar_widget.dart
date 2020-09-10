@@ -213,8 +213,11 @@ class _AppBarCustomBloc implements Bloc {
   Stream<String> get streamPesquisa { return _controllerPesquisa.stream; }
 
   _AppBarCustomBloc(this._onListener, this._initOpen) {
-    _controllerCallSearchAppBar = BehaviorSubject<bool>.seeded(_initOpen ?? false);
+    _controllerCallSearchAppBar = BehaviorSubject<bool>();
     _controllerPesquisa = BehaviorSubject<String>();
+    if (_initOpen != null && _initOpen){
+      sinkCallSearchAppBar(true);
+    }
     _handlerListener();
   }
 

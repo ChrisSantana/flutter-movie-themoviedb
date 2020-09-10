@@ -161,4 +161,12 @@ class GenreHelper {
       return GenreModel(id: 0, name: 'Desconhecido');
     });
   }
+
+  String getTextGenre(List<int> listId) {
+    if (listId == null || listId.isEmpty) return null;
+    final list = getListGenreFromId(listId);
+    return list != null && list.isNotEmpty ? list.map<String>((value){
+      return value.name;
+    })?.toList()?.join(', ') : null;
+  }
 }

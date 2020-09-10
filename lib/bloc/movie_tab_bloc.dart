@@ -22,11 +22,7 @@ class MovieTabBloc implements Bloc {
   }
 
   String getTextGenre(List<int> listId) {
-    if (listId == null || listId.isEmpty) return null;
-    final list = GenreHelper().getListGenreFromId(listId);
-    return list != null && list.isNotEmpty ? list.map<String>((value){
-      return value.name;
-    })?.toList()?.join(', ') : null;
+    return GenreHelper().getTextGenre(listId);
   }
 
   void _handlerShowAppBar(bool value) {

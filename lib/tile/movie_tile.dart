@@ -79,6 +79,8 @@ class MovieTile extends StatelessWidget {
   }
 
   Widget _buildDescricao(BuildContext context) {
+    final bloc = Provider.of<ApplicationBloc>(context, listen: false);
+    final genre = bloc.getTextGenre(movieModel.genreIds);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       child: Column(
@@ -87,7 +89,14 @@ class MovieTile extends StatelessWidget {
         children: <Widget>[
           Text(
             movieModel.overview,
-            maxLines: 5,
+            maxLines: 3,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.left,
+          ),
+          Spacer(flex: 1),
+          Text(
+            'Gênero: $genre',
+            maxLines: 1,
             overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.left,
           ),
