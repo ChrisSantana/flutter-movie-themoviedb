@@ -38,7 +38,6 @@ class _MovieTabState extends State<MovieTab> {
 
   @override
   Widget build(BuildContext context) {
-    print(movieModel.id);
     return Scaffold(
       body: Stack(
         children: <Widget>[
@@ -72,6 +71,7 @@ class _MovieTabState extends State<MovieTab> {
                 delegate: SliverChildListDelegate(
                   [
                     _buildHeadContent(),
+                    _buildGenre(),
                     _buildContent(),
                   ],
                 ),
@@ -97,7 +97,7 @@ class _MovieTabState extends State<MovieTab> {
             height: 200,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(4),
-              child: _buildFadeImage(BoxFit.fitHeight),
+              child: _buildFadeImage(movieModel.urlImgPoster, BoxFit.cover),
             ),
           ),
           Flexible(
@@ -122,14 +122,14 @@ class _MovieTabState extends State<MovieTab> {
 
   Widget _buildContent() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 26),
+      padding: const EdgeInsets.fromLTRB(20, 18, 20, 30),
       constraints: BoxConstraints(
         minHeight: 100,
       ),
       child: Text(
         movieModel.overview,
         style: TextStyle(
-          fontSize: 18.5,
+          fontSize: 16,
           height: 1.7,
         ),
       ),
@@ -148,6 +148,29 @@ class _MovieTabState extends State<MovieTab> {
         ),
       ),
     );
+  }
+
+  Widget _buildGenre() {
+    final text = _movieTabBloc.getTextGenre(movieModel.genreIds);
+    if (text != null && text.isNotEmpty) {
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+        margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: Colors.grey.shade700,
+          ),
+          borderRadius: BorderRadius.circular(6)
+        ),
+        child: Text(
+          'Gênero: $text',
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(fontSize: 16.5),
+        ),
+      );
+    }
+    return SizedBox.shrink();
   }
 
   Widget _buildAppBar() {
@@ -178,16 +201,16 @@ class _MovieTabState extends State<MovieTab> {
                 ],
               ),
             ),
-            background: _buildFadeImage(BoxFit.cover),
+            background: _buildFadeImage(movieModel.urlImBackdrop, BoxFit.cover),
           ),
         );
       },
     );
   }
 
-  Widget _buildFadeImage(BoxFit boxFit) {
+  Widget _buildFadeImage(String urlImg, BoxFit boxFit) {
     return FadeInImage(
-      image: movieModel.urlImgPoster != null ? NetworkImage(movieModel.urlImgPoster) : AssetImage(Util.instance.imgPlaceHolder),
+      image: urlImg != null ? NetworkImage(urlImg) : AssetImage(Util.instance.imgPlaceHolder),
       placeholder: AssetImage(Util.instance.imgPlaceHolder),
       fit: boxFit,
     );

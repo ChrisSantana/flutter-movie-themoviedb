@@ -1,4 +1,5 @@
 import 'package:fluttermovie/bloc/bloc.dart';
+import 'package:fluttermovie/library/genre_helper.dart';
 import 'package:rxdart/rxdart.dart';
 
 class MovieTabBloc implements Bloc {
@@ -18,6 +19,14 @@ class MovieTabBloc implements Bloc {
     _controllerShowAppBar = BehaviorSubject<bool>.seeded(false);
     _controllerRebuildFab = BehaviorSubject<bool>.seeded(false);
     _controllerShowAppBar.listen(_handlerShowAppBar);
+  }
+
+  String getTextGenre(List<int> listId) {
+    if (listId == null || listId.isEmpty) return null;
+    final list = GenreHelper().getListGenreFromId(listId);
+    return list != null && list.isNotEmpty ? list.map<String>((value){
+      return value.name;
+    })?.toList()?.join(', ') : null;
   }
 
   void _handlerShowAppBar(bool value) {

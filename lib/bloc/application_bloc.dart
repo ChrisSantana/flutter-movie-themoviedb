@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fluttermovie/enum/enum_screen.dart';
+import 'package:fluttermovie/library/debounce_helper.dart';
 import 'package:fluttermovie/library/exception_helper_error.dart';
 import 'package:fluttermovie/model/exception_model.dart';
 import 'package:fluttermovie/model/movie_model.dart';
@@ -22,6 +23,8 @@ import '../model/app_retorno_model.dart';
 const _keyTheme = 'key_thema_user';
 
 class ApplicationBloc implements Bloc {
+  String _query;
+
   PageController get pageController { return _pageController; }
   PageController _pageController;
 
@@ -81,7 +84,7 @@ class ApplicationBloc implements Bloc {
   Stream<String> get streamPageFrom { return _controllerPageFrom.stream; }
 
   ApplicationBloc() {
-    _controllerRetornoAPI = BehaviorSubject<AppRetornoModel>.seeded(AppRetornoModel(state: AppRetornoEnum.none, data: null));
+    _controllerRetornoAPI = BehaviorSubject<AppRetornoModel>.seeded(AppRetornoModel(state: AppRetornoEnum.processando, data: null));
     _controllerBottomNavigatorBar = BehaviorSubject<int>();
     _controllerHabilitarBtnAnterior = BehaviorSubject<bool>.seeded(false);
     _controllerHabilitarBtnProximo = BehaviorSubject<bool>.seeded(true);
@@ -94,14 +97,14 @@ class ApplicationBloc implements Bloc {
     _loadTheme().then(attTheme);
     _controllerRetornoAPI.listen(_handlerRetornoAPI);
 
-    requestAPI();
+    _handlerInitApp();
   }
 
   void requestAPI([int page = 1]) async {
     try {
       _changeAppRetorno(AppRetornoModel(state: AppRetornoEnum.processando, data: _controllerRetornoAPI?.value?.data));
 
-      final retorno = await MovieService.instance.getMovies(page);
+      final retorno = await MovieService.instance.getMovies(page > 0 ? page : 1, _query);
       final sucesso = retorno != null && retorno.movies != null && retorno.movies.isNotEmpty;
       
       _changeAppRetorno(AppRetornoModel(state: sucesso ? AppRetornoEnum.concluido : AppRetornoEnum.erro, data: retorno));
@@ -176,6 +179,17 @@ class ApplicationBloc implements Bloc {
       }
       sinkBottomPageFrom(getPageFrom);
     }
+  }
+
+  void _handlerInitApp() async {
+    Future.delayed(Duration(seconds: 4), requestAPI);
+  }
+
+  void handlerPesquisa(String query) {
+    DebouncerHelper.run(() {
+      _query = query;
+      requestAPI(getPage);
+    });
   }
 
   void onPressedAnterior() {

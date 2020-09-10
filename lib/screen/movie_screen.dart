@@ -19,9 +19,7 @@ class MovieScreen extends StatelessWidget {
         title: Text(bloc.getScreenModel(ScreenEnum.movie)?.name ?? ''),
         showIconSearch: true,
         hintTextSearch: 'Informe o nome do filme',
-        onListener: (value){
-          print(value);
-        },
+        onListener: bloc.handlerPesquisa,
       ),
       body: StreamBuilder<AppRetornoModel>(
         stream: bloc.streamRetornoAPI,

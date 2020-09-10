@@ -5,7 +5,6 @@ import '../library/util.dart';
 class SplashScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-  
     return Material(
       child: Stack(
         alignment: Alignment.center,

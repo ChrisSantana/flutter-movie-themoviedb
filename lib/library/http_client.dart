@@ -12,24 +12,30 @@ const int connectTimeout = 10000;
 
 class HttpClient implements ServiceBase {
   static final HttpClient _httpClient = HttpClient._internal();
-  static HttpClient get instance { return _httpClient; }
+  static HttpClient get instance {
+    return _httpClient;
+  }
+
   HttpClient._internal();
 
-    Future<Response> get(String url, int page) async {
-    final dio = await _instanceDio(page);
+  Future<Response> get(String url, int page, String query) async {
+    final dio = await _instanceDio(page, query);
+    print(page);
+    print(dio.options.queryParameters);
     try {
       final response = await dio.get(url);
       if (response.data != null) {
         return response;
       }
     } on DioError catch (error) {
+      print(error);
       _buildException(error);
     }
     return null;
   }
 
   Future<Response> post(String url, String data) async {
-    if(data == null || data.isEmpty) return null;
+    if (data == null || data.isEmpty) return null;
     final dio = await _instanceDio(1);
     try {
       return await dio.post(url, data: data);
@@ -40,7 +46,7 @@ class HttpClient implements ServiceBase {
   }
 
   Future<Response> put(String url, String data) async {
-    final dio = await _instanceDio();
+    final dio = await _instanceDio(1);
     try {
       final response = await dio.put(url, data: data);
       if (response.data != null) {
@@ -52,29 +58,33 @@ class HttpClient implements ServiceBase {
     return null;
   }
 
-  Future<Dio> _instanceDio([int page]) async {
+  Future<Dio> _instanceDio(int page, [String query]) async {
     final key = await _loadKey();
     BaseOptions options = BaseOptions(
       baseUrl: Util.instance.urlBase,
       connectTimeout: connectTimeout,
       receiveTimeout: receiveTimeout,
-      queryParameters: page != null && page > 0 ? {
-        'api_key': key,
-        'language': 'pt-BR',
-        'page': page,
-      } : {
-        'api_key': key,
-        'language': 'pt-BR',
-      },
+      queryParameters: query != null && query.trim().isNotEmpty
+          ? {
+              'api_key': key,
+              'language': 'pt-BR',
+              'page': page,
+              'query': Util.instance.normalizeQuery(query),
+            }
+          : {
+              'api_key': key,
+              'language': 'pt-BR',
+              'page': page,
+            },
     );
-    final dio = Dio(options);
-    return dio;
+    return Dio(options);
   }
 
   /// o ideal eh que esse arquivo nao seja adicionado (no assets) no repositorio por questao de seguranca
   /// vou adiciona-lo por se tratar de um teste
   Future<String> _loadKey() async {
-    return await rootBundle.loadStructuredData<String>(Util.instance.assetsKey, _paserLoad);
+    return await rootBundle.loadStructuredData<String>(
+        Util.instance.assetsKey, _paserLoad);
   }
 
   Future<String> _paserLoad(String value) async {
@@ -83,7 +93,7 @@ class HttpClient implements ServiceBase {
         final payload = Jwt.parseJwt(value);
         return KeyModel.fromMap(payload)?.key;
       }
-    } catch(e){
+    } catch (e) {
       print(e);
     }
     return '';
@@ -94,7 +104,8 @@ class HttpClient implements ServiceBase {
     final statusCode = error?.response?.statusCode ?? ERRO_SERVIDOR;
     if (error.type == DioErrorType.DEFAULT) {
       throw exceptionHandler.handlerErroConexao();
-    } else if (error.type == DioErrorType.CONNECT_TIMEOUT || error.type == DioErrorType.RECEIVE_TIMEOUT) {
+    } else if (error.type == DioErrorType.CONNECT_TIMEOUT ||
+        error.type == DioErrorType.RECEIVE_TIMEOUT) {
       throw exceptionHandler.handlerErroTimeout();
     } else if (statusCode == 404) {
       throw throw exceptionHandler.handlerErroNotFound();

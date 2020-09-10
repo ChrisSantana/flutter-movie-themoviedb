@@ -77,9 +77,10 @@ class MovieTile extends StatelessWidget {
 
   Widget _buildDescricao(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text(
             movieModel.overview,
@@ -87,6 +88,7 @@ class MovieTile extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.left,
           ),
+          Spacer(flex: 1),
           Text(
             'Lançamento: ${Util.instance.retornarDataPadraoBR(movieModel.releaseDate)}',
             maxLines: 2,
@@ -103,11 +105,14 @@ class MovieTile extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
         IconButton(icon: Icon(Icons.favorite), onPressed: (){}),
-        Text(
-          '${Util.instance.formatDouble(movieModel.voteAverage)}',
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-          textAlign: TextAlign.center,
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 6),
+          child: Text(
+            '${Util.instance.formatDouble(movieModel.voteAverage)}',
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
+          ),
         ),
       ],
     );

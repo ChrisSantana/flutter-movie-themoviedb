@@ -32,6 +32,10 @@ class Util {
     return '/movie/now_playing';
   }
 
+  String get urlSearchMovies {
+    return 'search/movie';
+  }
+
   /// por questao de otimizacao e por se tratar de um teste, vou sempre obter essa resolucao para as imagens
   String get urlBaseImg {
     return 'https://image.tmdb.org/t/p/w500';
@@ -74,6 +78,20 @@ class Util {
       print(e);
     }
     return '';
+  }
+
+  /// Retira caracteres especiais de um texto.
+  /// Exemplo: flutter-framework, terá o retorno flutterframework
+  String retirarCaracteresEspeciais(String text){
+    if (text.trim().isEmpty) return '';
+
+    return text.replaceAll(new RegExp(r'[^\w\s]+'),'').trim();
+  }
+
+  String normalizeQuery(String query) {
+    if(query == null || query.isEmpty) return null;
+    query = query.trim();
+    return query.replaceAll('  ', ' ').replaceAll(' ', '+');
   }
 
   /// Função util para printar textos longos

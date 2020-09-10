@@ -15,10 +15,10 @@ class MovieService implements MovieServiceBase {
   static MovieService get instance { return _movie; }
   MovieService._internal();
 
-  Future<ResultModel> getMovies(int page) async {
+  Future<ResultModel> getMovies(int page, String query) async {
     try {
-      await Future.delayed(Duration(seconds: 2));
-      final response = await _httpCliente.get(_util.urlMovies, page);
+      final url = query == null || query.trim().isEmpty ? _util.urlMovies : _util.urlSearchMovies;
+      final response = await _httpCliente.get(url, page, query);
       if (response != null && response.data != null ) {
         return ResultModel.fromMap(response.data);
       }
