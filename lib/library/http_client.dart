@@ -20,13 +20,13 @@ class HttpClient implements ServiceBase {
 
   Future<Response> get(String url, int page, String query) async {
     final dio = await _instanceDio(page, query);
+    /// TODO retirar
+    print(dio.options.baseUrl);
+    print(url);
     print(page);
     print(dio.options.queryParameters);
     try {
-      final response = await dio.get(url);
-      if (response.data != null) {
-        return response;
-      }
+      return await dio.get(url);
     } on DioError catch (error) {
       print(error);
       _buildException(error);

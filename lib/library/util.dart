@@ -90,8 +90,8 @@ class Util {
 
   String normalizeQuery(String query) {
     if(query == null || query.isEmpty) return null;
-    query = query.trim();
-    return query.replaceAll('  ', ' ').replaceAll(' ', '+');
+    query = retirarCaracteresEspeciais(query.trim());
+    return query.replaceAll('  ', ' ');
   }
 
   /// Função util para printar textos longos

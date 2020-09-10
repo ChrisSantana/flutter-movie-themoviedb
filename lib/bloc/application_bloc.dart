@@ -35,7 +35,7 @@ class ApplicationBloc implements Bloc {
 
   String get getPageFrom {
     final value = _controllerRetornoAPI.value?.data;
-    if (value != null && value is ResultModel){
+    if (value != null && value is ResultModel && value.movies != null && value.movies.isNotEmpty){
       final totalPage = value.totalPages ?? 0;
       final page = value.page ?? 0;
       return '$page / $totalPage';
@@ -100,7 +100,7 @@ class ApplicationBloc implements Bloc {
     _handlerInitApp();
   }
 
-  void requestAPI([int page = 1]) async {
+  Future<bool> requestAPI([int page = 1]) async {
     try {
       _changeAppRetorno(AppRetornoModel(state: AppRetornoEnum.processando, data: _controllerRetornoAPI?.value?.data));
 
@@ -108,10 +108,7 @@ class ApplicationBloc implements Bloc {
       final sucesso = retorno != null && retorno.movies != null && retorno.movies.isNotEmpty;
       
       _changeAppRetorno(AppRetornoModel(state: sucesso ? AppRetornoEnum.concluido : AppRetornoEnum.erro, data: retorno));
-      
-      if (sucesso){
-        AppService.instance.navigatePushReplecementTo(HomeScreen(), animated: true);
-      }
+      return sucesso;
     } on ExceptionModel catch (e) {
       _changeAppRetorno(AppRetornoModel(state: AppRetornoEnum.erro, data: e.msg));
       showToast(e.msg);
@@ -120,9 +117,11 @@ class ApplicationBloc implements Bloc {
       _changeAppRetorno(AppRetornoModel(state: AppRetornoEnum.erro, data: msg));
       showToast(msg);
     }
+    return false;
   }
 
   void _handlerNavigatorBar(int value) {
+    print('teste');
     if (value != null) {
       _pageController?.jumpToPage(value);
     }
@@ -182,7 +181,12 @@ class ApplicationBloc implements Bloc {
   }
 
   void _handlerInitApp() async {
-    Future.delayed(Duration(seconds: 4), requestAPI);
+    Future.delayed(Duration(seconds: 4), () async {
+      final sucesso = await requestAPI();
+      if (sucesso){
+        AppService.instance.navigatePushReplecementTo(HomeScreen(), animated: true);
+      }
+    });
   }
 
   void handlerPesquisa(String query) {
