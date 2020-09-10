@@ -77,20 +77,23 @@ class SplashScreen extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       child: Align(
         alignment: Alignment.center,
-        child: Text(
-          Util.instance.introSplash,
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 14,
-            height: 1.6,
-            shadows: [
-              BoxShadow(
-                color: Colors.black87,
-                spreadRadius: 1,
-                blurRadius: 7,
-                offset: Offset(0, 3), // changes position of shadow
-              ),
-            ],
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Text(
+            Util.instance.introSplash,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 14,
+              height: 1.6,
+              shadows: [
+                BoxShadow(
+                  color: Colors.black87,
+                  spreadRadius: 1,
+                  blurRadius: 7,
+                  offset: Offset(0, 3), // changes position of shadow
+                ),
+              ],
+            ),
           ),
         ),
       ),

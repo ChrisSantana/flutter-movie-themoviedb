@@ -23,7 +23,6 @@ class HttpClient implements ServiceBase {
       final dio = await _instanceDio(page, query);
       return await dio.get(url);
     } on DioError catch (error) {
-      print(error);
       _buildException(error);
     }
     return null;

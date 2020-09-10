@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:fluttermovie/bloc/application_bloc.dart';
 import '../../bloc/bloc.dart';
 import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
@@ -40,29 +41,30 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appBloc = Provider.of<ApplicationBloc>(context);
     return Provider<_AppBarCustomBloc>(
       create: (_) {
-        return _AppBarCustomBloc(onListener);
+        return _AppBarCustomBloc(onListener, appBloc.query != null && appBloc.query.isNotEmpty);
       },
       dispose: (_, value) {
         value?.dispose();
       },
       child: Consumer<_AppBarCustomBloc>(
         builder: (_, bloc, __) {
-          return _buildContent(context, bloc);
+          return _buildContent(context, bloc, appBloc);
         },
       ),
     );
   }
 
-  Widget _buildContent(BuildContext context, _AppBarCustomBloc bloc) {
+  Widget _buildContent(BuildContext context, _AppBarCustomBloc bloc, ApplicationBloc appBloc) {
     return PreferredSize(
       preferredSize: preferredSize,
       child: showIconSearch ? StreamBuilder<bool>(
         stream: bloc.streamCallSearchAppBar,
         initialData: false,
         builder: (context, snapAppBar) {
-          return !snapAppBar.hasData || !snapAppBar.data ? _buildAppBarDefault(context, bloc) : _buildAppBarSearch(context, bloc);
+          return !snapAppBar.hasData || !snapAppBar.data ? _buildAppBarDefault(context, bloc) : _buildAppBarSearch(context, bloc, appBloc);
         },
       ) : _buildAppBarDefault(context, bloc),
     );
@@ -83,14 +85,15 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
       ) : PreferredSize(child: SizedBox.shrink(), preferredSize: const Size.fromHeight(0));
   }
 
-  Widget _buildAppBarSearch(BuildContext context, _AppBarCustomBloc bloc) {
+  Widget _buildAppBarSearch(BuildContext context, _AppBarCustomBloc bloc, ApplicationBloc appBloc) {
     return showAppBar ? 
       AppBar(
         elevation: elevationAppBar,
         leading: _buildCloseSearch(context, bloc),
         bottom: _bottomAppBar(context),
         title: TextField(
-          autofocus: true,
+          controller: TextEditingController(text: appBloc.query ?? ''),
+          autofocus: false,
           style: TextStyle(
             fontSize: 14,
           ),
@@ -199,6 +202,7 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
 
 class _AppBarCustomBloc implements Bloc {
   final Function(String) _onListener;
+  final bool _initOpen;
 
   BehaviorSubject<bool> _controllerCallSearchAppBar;
   Function(bool) get sinkCallSearchAppBar { return _controllerCallSearchAppBar.sink.add; }
@@ -208,8 +212,8 @@ class _AppBarCustomBloc implements Bloc {
   Function(String) get sinkPesquisa { return _controllerPesquisa.sink.add; }
   Stream<String> get streamPesquisa { return _controllerPesquisa.stream; }
 
-  _AppBarCustomBloc(this._onListener) {
-    _controllerCallSearchAppBar = BehaviorSubject<bool>();
+  _AppBarCustomBloc(this._onListener, this._initOpen) {
+    _controllerCallSearchAppBar = BehaviorSubject<bool>.seeded(_initOpen ?? false);
     _controllerPesquisa = BehaviorSubject<String>();
     _handlerListener();
   }

@@ -62,12 +62,13 @@ class ApplicationBloc implements Bloc {
     _controllerRetornoAPI.listen(_handlerRetornoAPI);
     _controllerAttFavorite.listen(_handlerFavotires);
 
-    _handlerInitApp();
+    handlerInitApp();
   }
 
   /// Variaveis
   String _query;
 
+  String get query { return _query; }
   PageController get pageController { return _pageController; }
   PageController _pageController;
 
@@ -171,8 +172,8 @@ class ApplicationBloc implements Bloc {
     }
   }
 
-  void _handlerInitApp() async {
-    Future.delayed(Duration(seconds: 4), () async {
+  void handlerInitApp([int secodsDelayed = 4]) async {
+    Future.delayed(Duration(seconds: secodsDelayed), () async {
       final sucesso = await requestAPI();
       if (sucesso){
         AppService.instance.navigatePushReplecementTo(HomeScreen(), animated: true);

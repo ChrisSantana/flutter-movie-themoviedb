@@ -52,7 +52,9 @@ class FactoryProgressSplashWidget extends StatelessWidget {
         width: MediaQuery.of(context).size.height * 0.3,
         child: RaisedButton(
           child: Text(Util.instance.nameButtonSplash),
-          onPressed: bloc.requestAPI,
+          onPressed: (){
+            bloc.handlerInitApp(0);
+          },
         ),
       ),
     );
