@@ -35,11 +35,17 @@ class MovieModel {
   });
 
   String get urlImgPoster {
-    return join(Util.instance.urlBaseImg, posterPath.replaceAll('/', ''));
+    if (posterPath != null && posterPath.isNotEmpty) {
+      return join(Util.instance.urlBaseImg, posterPath.replaceAll('/', ''));
+    }
+    return null;
   }
 
   String get urlImBackdrop {
-    return join(Util.instance.urlBaseImg, backdropPath.replaceAll('/', ''));
+    if (backdropPath != null && backdropPath.isNotEmpty) {
+      return join(Util.instance.urlBaseImg, backdropPath.replaceAll('/', ''));
+    }
+    return null;
   }
 
   factory MovieModel.fromMap(Map<String, dynamic> map) {

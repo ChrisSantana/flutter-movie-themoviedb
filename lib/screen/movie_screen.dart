@@ -25,14 +25,15 @@ class MovieScreen extends StatelessWidget {
       ),
       body: StreamBuilder<AppRetornoModel>(
         stream: bloc.streamRetornoAPI,
-        initialData:
-            AppRetornoModel(state: AppRetornoEnum.processando, data: null),
+        initialData: AppRetornoModel(state: AppRetornoEnum.processando, data: null),
         builder: (_, snapshot) {
           final retornoModel = snapshot.data;
           if (retornoModel != null) {
             switch (retornoModel.state) {
               case AppRetornoEnum.processando:
-                return ProgressIndicatorWidget();
+                return Center(
+                  child: ProgressIndicatorWidget(),
+                );
                 break;
               case AppRetornoEnum.concluido:
                 return _buildContent(context, bloc);
@@ -46,7 +47,7 @@ class MovieScreen extends StatelessWidget {
           return SizedBox.shrink();
         },
       ),
-      bottomNavigationBar: _buildBottomNavigator(context),
+      bottomNavigationBar: _buildBottomNavigator(context, bloc),
     );
   }
 
@@ -73,7 +74,7 @@ class MovieScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildBottomNavigator(BuildContext context) {
+  Widget _buildBottomNavigator(BuildContext context, ApplicationBloc bloc) {
     return BottomAppBar(
       elevation: 10,
       child: Padding(
@@ -82,11 +83,50 @@ class MovieScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            _buildFlatButton(context, 'Anterior', (){}),
-            _buildFlatButton(context, 'Próximo', (){}),
+            _buildBtnAnterior(context, bloc),
+            _buildPageFrom(bloc),
+            _buildBtnProximo(context, bloc),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildBtnAnterior(BuildContext context, ApplicationBloc bloc) {
+    return StreamBuilder<bool>(
+      stream: bloc.streamHabilitarBtnAnterior,
+      builder: (_,snapshot){
+        final habilitado = snapshot.data ?? false;
+        return _buildFlatButton(
+          context, 
+          'Anterior', 
+          habilitado ? bloc.onPressedAnterior : null,
+        );
+      },
+    );
+  }
+
+  Widget _buildBtnProximo(BuildContext context, ApplicationBloc bloc) {
+    return StreamBuilder<bool>(
+      stream: bloc.streamHabilitarBtnProximo,
+      builder: (_,snapshot){
+        final habilitado = snapshot.data ?? false;
+        return _buildFlatButton(
+          context, 
+          'Próximo', 
+          habilitado ? bloc.onPressedProximo : null,
+        );
+      },
+    );
+  }
+
+  Widget _buildPageFrom(ApplicationBloc bloc) {
+    return StreamBuilder<String>(
+      stream: bloc.streamPageFrom,
+      builder: (_,snapshot){
+        final text = snapshot.data ?? '';
+        return Text(text);
+      },
     );
   }
 

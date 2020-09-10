@@ -5,7 +5,6 @@ import 'package:fluttermovie/library/util.dart';
 import 'package:fluttermovie/model/movie_model.dart';
 import 'package:fluttermovie/repository/app_service.dart';
 import 'package:fluttermovie/tab/movie_tab.dart';
-import 'package:transparent_image/transparent_image.dart';
 
 class MovieTile extends StatelessWidget {
   final MovieModel movieModel;
@@ -21,7 +20,7 @@ class MovieTile extends StatelessWidget {
         width: MediaQuery.of(context).size.width,
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: NetworkImage(movieModel.urlImBackdrop),
+            image: movieModel.urlImBackdrop != null ? NetworkImage(movieModel.urlImBackdrop) : AssetImage(Util.instance.imgPlaceHolder),
             fit: BoxFit.cover,
             colorFilter: ColorFilter.mode(Colors.black87.withOpacity(0.7), BlendMode.darken),
             onError: (exception, stackTrace) {
@@ -58,16 +57,10 @@ class MovieTile extends StatelessWidget {
           Expanded(
             child: ClipRRect(
               borderRadius: BorderRadius.circular(4),
-              child: FadeInImage.memoryNetwork(
-                placeholder: kTransparentImage,
-                image: movieModel.urlImgPoster,
+              child: FadeInImage(
+                image: movieModel.urlImgPoster != null ? NetworkImage(movieModel.urlImgPoster) : AssetImage(Util.instance.imgPlaceHolder),
+                placeholder: AssetImage(Util.instance.imgPlaceHolder),
                 fit: BoxFit.cover,
-                imageErrorBuilder: (context, error, stackTrace) {
-                  return Image.asset(
-                    Util.instance.imgPlaceHolder,
-                    fit: BoxFit.cover,
-                  );
-                },
               ),
             ),
           ),

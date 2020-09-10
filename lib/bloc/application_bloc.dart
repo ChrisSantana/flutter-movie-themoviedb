@@ -30,6 +30,32 @@ class ApplicationBloc implements Bloc {
     return value != null && value is ResultModel ? value.movies : [];
   }
 
+  String get getPageFrom {
+    final value = _controllerRetornoAPI.value?.data;
+    if (value != null && value is ResultModel){
+      final totalPage = value.totalPages ?? 0;
+      final page = value.page ?? 0;
+      return '$page / $totalPage';
+    }
+    return '';
+  }
+
+  int get getPage {
+    if (_isValidate()) {
+      final value = _controllerRetornoAPI.value?.data;
+      return value?.page ?? 0;
+    }
+    return 0;
+  }
+
+  int get getTotalPage {
+    final value = _controllerRetornoAPI.value?.data;
+    if (value != null && value is ResultModel){
+      return  value?.totalPages ?? 0;
+    }
+    return 0;
+  }
+
   BehaviorSubject<AppRetornoModel> _controllerRetornoAPI;
   Function(AppRetornoModel) get _changeAppRetorno { return _controllerRetornoAPI.add; }
   Stream<AppRetornoModel> get streamRetornoAPI { return _controllerRetornoAPI.stream; }
@@ -42,23 +68,40 @@ class ApplicationBloc implements Bloc {
   Function(int) get _sinkTheme { return _controllerTheme.sink.add; }
   Stream<int> get streamTheme { return _controllerTheme.stream; }
 
+  BehaviorSubject<bool> _controllerHabilitarBtnAnterior;
+  Function(bool) get _changeHabilitarBtnAnterior { return _controllerHabilitarBtnAnterior.add; }
+  Stream<bool> get streamHabilitarBtnAnterior { return _controllerHabilitarBtnAnterior.stream; }
+
+  BehaviorSubject<bool> _controllerHabilitarBtnProximo;
+  Function(bool) get _changeHabilitarBtnProximo { return _controllerHabilitarBtnProximo.add; }
+  Stream<bool> get streamHabilitarBtnProximo { return _controllerHabilitarBtnProximo.stream; }
+
+  BehaviorSubject<String> _controllerPageFrom;
+  Function(String) get sinkBottomPageFrom { return _controllerPageFrom.sink.add; }
+  Stream<String> get streamPageFrom { return _controllerPageFrom.stream; }
+
   ApplicationBloc() {
-    _controllerRetornoAPI = BehaviorSubject<AppRetornoModel>();
+    _controllerRetornoAPI = BehaviorSubject<AppRetornoModel>.seeded(AppRetornoModel(state: AppRetornoEnum.none, data: null));
     _controllerBottomNavigatorBar = BehaviorSubject<int>();
+    _controllerHabilitarBtnAnterior = BehaviorSubject<bool>.seeded(false);
+    _controllerHabilitarBtnProximo = BehaviorSubject<bool>.seeded(true);
+    _controllerPageFrom = BehaviorSubject<String>.seeded('');
     _controllerTheme = BehaviorSubject<int>.seeded(ThemeEnum.escuro.index);
 
     _pageController = PageController(initialPage: getListaScreenModel().first.position.index);
+    
     _controllerBottomNavigatorBar.listen(_handlerNavigatorBar);
     _loadTheme().then(attTheme);
+    _controllerRetornoAPI.listen(_handlerRetornoAPI);
 
     requestAPI();
   }
 
-  void requestAPI() async {
+  void requestAPI([int page = 1]) async {
     try {
       _changeAppRetorno(AppRetornoModel(state: AppRetornoEnum.processando, data: _controllerRetornoAPI?.value?.data));
 
-      final retorno = await MovieService.instance.getMovies(1);
+      final retorno = await MovieService.instance.getMovies(page);
       final sucesso = retorno != null && retorno.movies != null && retorno.movies.isNotEmpty;
       
       _changeAppRetorno(AppRetornoModel(state: sucesso ? AppRetornoEnum.concluido : AppRetornoEnum.erro, data: retorno));
@@ -120,11 +163,42 @@ class ApplicationBloc implements Bloc {
     }, orElse: () { return null; });
   }
 
+  void _handlerRetornoAPI(AppRetornoModel model) {
+    if (model != null && model.state != null) {
+      switch (model.state) {
+        case AppRetornoEnum.processando:
+          _changeHabilitarBtnAnterior(false);
+          _changeHabilitarBtnProximo(false);
+          break;
+        default:
+          _changeHabilitarBtnAnterior(getPage != null && getPage > 1);
+          _changeHabilitarBtnProximo(getPage != null && getTotalPage != null && getPage < getTotalPage);
+      }
+      sinkBottomPageFrom(getPageFrom);
+    }
+  }
+
+  void onPressedAnterior() {
+    requestAPI(getPage != null ? (getPage - 1) : 1);
+  }
+
+  void onPressedProximo() {
+    requestAPI(getPage != null ? (getPage + 1) : 1);
+  }
+
+  bool _isValidate() {
+    final value = _controllerRetornoAPI.value?.data;
+    return value != null && value is ResultModel;
+  }
+
   @override
   void dispose() async {
     await _controllerBottomNavigatorBar?.close();
     await _controllerTheme?.close();
     await _controllerRetornoAPI?.close();
+    await _controllerHabilitarBtnAnterior?.close();
+    await _controllerHabilitarBtnProximo?.close();
+    await _controllerPageFrom?.close();
     _pageController?.dispose();
   }
 }

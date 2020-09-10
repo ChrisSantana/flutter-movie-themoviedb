@@ -6,7 +6,6 @@ import 'package:fluttermovie/library/util.dart';
 import 'package:fluttermovie/model/movie_model.dart';
 import 'package:fluttermovie/widget/geral/sliver_app_bar_widget.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:transparent_image/transparent_image.dart';
 
 const double SPACE_BAR_HEIGHT = 250;
 
@@ -39,6 +38,7 @@ class _MovieTabState extends State<MovieTab> {
 
   @override
   Widget build(BuildContext context) {
+    print(movieModel.id);
     return Scaffold(
       body: Stack(
         children: <Widget>[
@@ -47,7 +47,7 @@ class _MovieTabState extends State<MovieTab> {
             width: MediaQuery.of(context).size.width,
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: NetworkImage(movieModel.urlImgPoster),
+                image: movieModel.urlImgPoster != null ? NetworkImage(movieModel.urlImgPoster) : AssetImage(Util.instance.imgPlaceHolder),
                 fit: BoxFit.cover,
               ),
             ),
@@ -97,17 +97,7 @@ class _MovieTabState extends State<MovieTab> {
             height: 200,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(4),
-              child: FadeInImage.memoryNetwork(
-                placeholder: kTransparentImage,
-                image: movieModel.urlImgPoster,
-                fit: BoxFit.fitHeight,
-                imageErrorBuilder: (context, error, stackTrace) {
-                  return Image.asset(
-                    Util.instance.imgPlaceHolder,
-                    fit: BoxFit.cover,
-                  );
-                },
-              ),
+              child: _buildFadeImage(BoxFit.fitHeight),
             ),
           ),
           Flexible(
@@ -188,14 +178,18 @@ class _MovieTabState extends State<MovieTab> {
                 ],
               ),
             ),
-            background: FadeInImage(
-              image: NetworkImage(movieModel.urlImBackdrop),
-              placeholder: AssetImage(Util.instance.imgPlaceHolder),
-              fit: BoxFit.cover,
-            ),
+            background: _buildFadeImage(BoxFit.cover),
           ),
         );
       },
+    );
+  }
+
+  Widget _buildFadeImage(BoxFit boxFit) {
+    return FadeInImage(
+      image: movieModel.urlImgPoster != null ? NetworkImage(movieModel.urlImgPoster) : AssetImage(Util.instance.imgPlaceHolder),
+      placeholder: AssetImage(Util.instance.imgPlaceHolder),
+      fit: boxFit,
     );
   }
 

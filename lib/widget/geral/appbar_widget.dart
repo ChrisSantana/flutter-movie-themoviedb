@@ -92,7 +92,6 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
         title: TextField(
           autofocus: true,
           style: TextStyle(
-            //color: Theme.of(context).textTheme.caption.color,
             fontSize: 14,
           ),
           decoration: InputDecoration(
@@ -104,12 +103,10 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
             ),
             hintText: hintTextSearch,
             hintStyle: TextStyle(
-              //color: Theme.of(context).disabledColor,
               fontWeight: FontWeight.w400,
               fontSize: 13,
             ),
             filled: true,
-            //fillColor: Colors.blueGrey.shade50,
           ),
           onChanged: bloc.sinkPesquisa,
         ),
@@ -142,7 +139,6 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
           child: Text(
             subtitle.toUpperCase(),
             style: TextStyle(
-              //color: Theme.of(context).textTheme.caption.color,
               fontWeight: FontWeight.w500,
               fontSize: 14,
             ),
