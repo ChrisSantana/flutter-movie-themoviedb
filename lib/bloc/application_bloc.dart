@@ -24,6 +24,10 @@ class ApplicationBloc implements Bloc {
   Function(AppRetornoModel) get _changeAppRetorno { return _controllerRetornoAPI.add; }
   Stream<AppRetornoModel> get streamRetornoAPI { return _controllerRetornoAPI.stream; }
 
+  BehaviorSubject<AppRetornoModel> _controllerRetornoFavorite;
+  Function(AppRetornoModel) get _changeRetornoFavorite { return _controllerRetornoFavorite.add; }
+  Stream<AppRetornoModel> get streamRetornoFavorite { return _controllerRetornoFavorite.stream; }
+
   BehaviorSubject<int> _controllerBottomNavigatorBar;
   Function(int) get sinkBottomNavigatorBar { return _controllerBottomNavigatorBar.sink.add; }
   Stream<int> get streamBottomNavigatorBar { return _controllerBottomNavigatorBar.stream; }
@@ -46,6 +50,7 @@ class ApplicationBloc implements Bloc {
 
   ApplicationBloc() {
     _controllerRetornoAPI = BehaviorSubject<AppRetornoModel>.seeded(AppRetornoModel(state: AppRetornoEnum.processando, data: null));
+    _controllerRetornoFavorite = BehaviorSubject<AppRetornoModel>.seeded(AppRetornoModel(state: AppRetornoEnum.processando, data: null));
     _controllerBottomNavigatorBar = BehaviorSubject<int>();
     _controllerHabilitarBtnAnterior = BehaviorSubject<bool>.seeded(false);
     _controllerHabilitarBtnProximo = BehaviorSubject<bool>.seeded(true);
@@ -55,6 +60,7 @@ class ApplicationBloc implements Bloc {
     _pageController = PageController(initialPage: getListaScreenModel().first.position.index);
     _controllerBottomNavigatorBar.listen(_handlerNavigatorBar);
     _controllerRetornoAPI.listen(_handlerRetornoAPI);
+    _controllerAttFavorite.listen(_handlerFavotires);
 
     _handlerInitApp();
   }
@@ -68,6 +74,11 @@ class ApplicationBloc implements Bloc {
   List<MovieModel> get listMovie {
     final value = _controllerRetornoAPI.value?.data;
     return value != null && value is ResultModel ? value.movies : [];
+  }
+
+  List<MovieModel> get listMovieFavorites {
+    final value = _controllerRetornoFavorite.value?.data;
+    return value != null && value is List<MovieModel> ? value : [];
   }
 
   String get getPageFrom {
@@ -117,6 +128,27 @@ class ApplicationBloc implements Bloc {
     return false;
   }
 
+  /// Requisicao Favoritos
+  Future<bool> requestFavorites() async {
+    try {
+      _changeRetornoFavorite(AppRetornoModel(state: AppRetornoEnum.processando, data: _controllerRetornoFavorite?.value?.data));
+
+      final retorno = await MovieService.instance.getFavorites();
+      final sucesso = retorno != null && retorno.isNotEmpty;
+      
+      _changeRetornoFavorite(AppRetornoModel(state: sucesso ? AppRetornoEnum.concluido : AppRetornoEnum.erro, data: retorno));
+      return sucesso;
+    } on ExceptionModel catch (e) {
+      _changeRetornoFavorite(AppRetornoModel(state: AppRetornoEnum.erro, data: e.msg));
+      showToast(e.msg);
+    } catch (_) {
+      final msg = ExceptionHelperError.instance.handlerErroConexao().msg;
+      _changeRetornoFavorite(AppRetornoModel(state: AppRetornoEnum.erro, data: msg));
+      showToast(msg);
+    }
+    return false;
+  }
+
   /// Handler
   void _handlerRetornoAPI(AppRetornoModel model) {
     if (model != null && model.state != null) {
@@ -130,6 +162,12 @@ class ApplicationBloc implements Bloc {
           _changeHabilitarBtnProximo(getPage != null && getTotalPage != null && getPage < getTotalPage);
       }
       sinkBottomPageFrom(getPageFrom);
+    }
+  }
+
+  void _handlerFavotires(bool value){
+    if (pageController.page.toInt().compareTo(ScreenEnum.favorite.index) == 0){
+      requestFavorites();
     }
   }
 
@@ -152,6 +190,7 @@ class ApplicationBloc implements Bloc {
   void _handlerNavigatorBar(int value) {
     if (value != null) {
       _pageController?.jumpToPage(value);
+      _handlerFavotires(null);
     }
   }
 
@@ -188,7 +227,7 @@ class ApplicationBloc implements Bloc {
   List<ScreenModel> getListaScreenModel() {
     return [
       ScreenModel(ScreenEnum.movie, 'Filmes', FontAwesomeIcons.film),
-      ScreenModel(ScreenEnum.favorito, 'Favoritos', FontAwesomeIcons.solidHeart),
+      ScreenModel(ScreenEnum.favorite, 'Favoritos', FontAwesomeIcons.solidHeart),
     ];
   }
 
@@ -206,6 +245,7 @@ class ApplicationBloc implements Bloc {
     await _controllerHabilitarBtnProximo?.close();
     await _controllerPageFrom?.close();
     await _controllerAttFavorite?.close();
+    await _controllerRetornoFavorite?.close();
     _pageController?.dispose();
   }
 }
