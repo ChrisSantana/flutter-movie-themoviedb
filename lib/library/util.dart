@@ -52,7 +52,7 @@ class Util {
   }
 
   String get introSplash {
-    return 'Acompanhe os principais lançamentos, veja detalhes e as principais informações dos filmes de sua preferência. Além disso, o aplicativo possibilita favoritá-los. Divita-se!!';
+    return 'Acompanhe os principais lançamentos, veja detalhes e as principais informações dos filmes de sua preferência. Além disso, o aplicativo possibilita favoritá-los. Divirta-se!!';
   }
 
   String get nameButtonSplash {
