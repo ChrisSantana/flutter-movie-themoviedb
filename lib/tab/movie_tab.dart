@@ -1,11 +1,15 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:fluttermovie/bloc/application_bloc.dart';
 import 'package:fluttermovie/bloc/movie_tab_bloc.dart';
 import 'package:fluttermovie/library/util.dart';
 import 'package:fluttermovie/model/movie_model.dart';
-import 'package:fluttermovie/widget/geral/sliver_app_bar_widget.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:fluttermovie/widget/geral/factory_favorite_widget.dart';
+import 'package:fluttermovie/widget/movie_tab/movie_app_bar_widget.dart';
+import 'package:fluttermovie/widget/movie_tab/movie_genre_widget.dart';
+import 'package:fluttermovie/widget/movie_tab/movie_head_widget.dart';
+import 'package:provider/provider.dart';
 
 const double SPACE_BAR_HEIGHT = 250;
 
@@ -66,13 +70,25 @@ class _MovieTabState extends State<MovieTab> {
             physics: ClampingScrollPhysics(),
             controller: _scrollController,
             slivers: <Widget>[
-              _buildAppBar(),
+              MovieAppBarWidget(SPACE_BAR_HEIGHT, movieModel, _movieTabBloc),
               SliverList(
                 delegate: SliverChildListDelegate(
                   [
-                    _buildHeadContent(),
-                    _buildGenre(),
-                    _buildContent(),
+                    MovieHeadWidget(movieModel),
+                    MovieGenreWidget(movieModel, _movieTabBloc),
+                    Container(
+                    padding: const EdgeInsets.fromLTRB(20, 18, 20, 30),
+                      constraints: BoxConstraints(
+                        minHeight: 100,
+                      ),
+                      child: Text(
+                        movieModel.overview,
+                        style: TextStyle(
+                          fontSize: 14.5,
+                          height: 1.7,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -82,155 +98,6 @@ class _MovieTabState extends State<MovieTab> {
         ],
       ),
     );
-  }
-
-  Widget _buildHeadContent() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 26),
-      constraints: BoxConstraints(
-        minHeight: 100,
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Container(
-            height: 200,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(4),
-              child: _buildFadeImage(movieModel.urlImgPoster, BoxFit.cover),
-            ),
-          ),
-          Flexible(
-            flex: 3,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  _buildInformation('Título original: ${movieModel.originalTitle}', 0),
-                  _buildInformation('Lançamento: ${Util.instance.retornarDataPadraoBR(movieModel.releaseDate)}'),
-                  _buildInformation('Popularidade: ${Util.instance.formatDouble(movieModel.popularity)}'),
-                  _buildInformation('Avaliação: ${Util.instance.formatDouble(movieModel.voteAverage)}'),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildContent() {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(20, 18, 20, 30),
-      constraints: BoxConstraints(
-        minHeight: 100,
-      ),
-      child: Text(
-        movieModel.overview,
-        style: TextStyle(
-          fontSize: 16,
-          height: 1.7,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildInformation(String text, [double paddingTop = 6]) {
-    return Padding(
-      padding: EdgeInsets.only(top: paddingTop),
-      child: Text(
-        text, 
-        maxLines: 3,
-        style: TextStyle(
-          fontSize: 15.5,
-          height: 1.4,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildGenre() {
-    final text = _movieTabBloc.getTextGenre(movieModel.genreIds);
-    if (text != null && text.isNotEmpty) {
-      return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-        margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
-        decoration: BoxDecoration(
-          border: Border.all(
-            color: Colors.grey.shade700,
-          ),
-          borderRadius: BorderRadius.circular(6)
-        ),
-        child: Text(
-          'Gênero: $text',
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-          style: TextStyle(fontSize: 16.5),
-        ),
-      );
-    }
-    return SizedBox.shrink();
-  }
-
-  Widget _buildAppBar() {
-    return StreamBuilder<bool>(
-      stream: _movieTabBloc.streamShowAppBar,
-      builder: (context, snapshot) {
-        final showAppBar = snapshot.data ?? false;
-        return SliverAppBarWidget(
-          expandedHeight: SPACE_BAR_HEIGHT,
-          pinned: true,
-          floating: false,
-          snap: false,
-          brightness: !showAppBar ? Brightness.light : Brightness.dark,
-          elevation: _movieTabBloc.showAppBar ? null : .2,
-          actions: _buildActions(),
-          flexibleSpace: FlexibleSpaceBar(
-            collapseMode: CollapseMode.parallax,
-            title: Text(
-              movieModel.title,
-              style: TextStyle(
-                shadows: [
-                  BoxShadow(
-                    color: Colors.black87,
-                    spreadRadius: 1,
-                    blurRadius: 7,
-                    offset: Offset(0, 3), // changes position of shadow
-                  ),
-                ],
-              ),
-            ),
-            background: _buildFadeImage(movieModel.urlImBackdrop, BoxFit.cover),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildFadeImage(String urlImg, BoxFit boxFit) {
-    return FadeInImage(
-      image: urlImg != null ? NetworkImage(urlImg) : AssetImage(Util.instance.imgPlaceHolder),
-      placeholder: AssetImage(Util.instance.imgPlaceHolder),
-      fit: boxFit,
-    );
-  }
-
-  List<Widget> _buildActions() {
-    return [
-      _movieTabBloc.showAppBar
-          ? Padding(
-              padding: const EdgeInsets.only(right: 8),
-              child: IconButton(
-                icon: Icon(
-                  FontAwesomeIcons.heart,
-                  size: 21,
-                ),
-                onPressed: () {},
-              ),
-            )
-          : SizedBox.shrink()
-    ];
   }
 
   Widget _buildFloatingActionButtonFavorito() {
@@ -244,17 +111,18 @@ class _MovieTabState extends State<MovieTab> {
             transform: Matrix4.identity()..scale(_scalePositionedFab),
             alignment: Alignment.center,
             child: FloatingActionButton(
-              backgroundColor: Colors.white,
-              child: Icon(
-                FontAwesomeIcons.heart,
-                color: Theme.of(context).primaryColor,
-              ),
-              onPressed: () {},
+              backgroundColor: Colors.blueGrey.shade900,
+              child: FactoryFavoriteWidget(movieModel.id, 21),
+              onPressed: _onPressedFavorite,
             ),
           ),
         );
       },
     );
+  }
+
+  void _onPressedFavorite() {
+    Provider.of<ApplicationBloc>(context, listen: false).saveFavorite(movieModel);
   }
 
   void _handlerScrollController() {

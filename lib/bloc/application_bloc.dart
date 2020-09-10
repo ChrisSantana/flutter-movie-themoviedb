@@ -12,17 +12,54 @@ import 'package:fluttermovie/screen/home_screen.dart';
 import 'package:fluttermovie/widget/geral/show_dialog_helper.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../enum/enum_app_retorno.dart';
-import '../enum/enum_theme.dart';
-import '../library/shared_preferences_helper.dart';
-import '../library/theme_helper.dart';
 import '../bloc/bloc.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../model/app_retorno_model.dart';
 
-const _keyTheme = 'key_thema_user';
-
 class ApplicationBloc implements Bloc {
+
+  /// BehaviorSubject
+  BehaviorSubject<AppRetornoModel> _controllerRetornoAPI;
+  Function(AppRetornoModel) get _changeAppRetorno { return _controllerRetornoAPI.add; }
+  Stream<AppRetornoModel> get streamRetornoAPI { return _controllerRetornoAPI.stream; }
+
+  BehaviorSubject<int> _controllerBottomNavigatorBar;
+  Function(int) get sinkBottomNavigatorBar { return _controllerBottomNavigatorBar.sink.add; }
+  Stream<int> get streamBottomNavigatorBar { return _controllerBottomNavigatorBar.stream; }
+
+  BehaviorSubject<bool> _controllerHabilitarBtnAnterior;
+  Function(bool) get _changeHabilitarBtnAnterior { return _controllerHabilitarBtnAnterior.add; }
+  Stream<bool> get streamHabilitarBtnAnterior { return _controllerHabilitarBtnAnterior.stream; }
+
+  BehaviorSubject<bool> _controllerHabilitarBtnProximo;
+  Function(bool) get _changeHabilitarBtnProximo { return _controllerHabilitarBtnProximo.add; }
+  Stream<bool> get streamHabilitarBtnProximo { return _controllerHabilitarBtnProximo.stream; }
+
+  BehaviorSubject<String> _controllerPageFrom;
+  Function(String) get sinkBottomPageFrom { return _controllerPageFrom.sink.add; }
+  Stream<String> get streamPageFrom { return _controllerPageFrom.stream; }
+
+  BehaviorSubject<bool> _controllerAttFavorite;
+  Function(bool) get _changeAttFavorite { return _controllerAttFavorite.add; }
+  Stream<bool> get streamAttFavorite { return _controllerAttFavorite.stream; }
+
+  ApplicationBloc() {
+    _controllerRetornoAPI = BehaviorSubject<AppRetornoModel>.seeded(AppRetornoModel(state: AppRetornoEnum.processando, data: null));
+    _controllerBottomNavigatorBar = BehaviorSubject<int>();
+    _controllerHabilitarBtnAnterior = BehaviorSubject<bool>.seeded(false);
+    _controllerHabilitarBtnProximo = BehaviorSubject<bool>.seeded(true);
+    _controllerPageFrom = BehaviorSubject<String>.seeded('');
+    _controllerAttFavorite = BehaviorSubject<bool>();
+
+    _pageController = PageController(initialPage: getListaScreenModel().first.position.index);
+    _controllerBottomNavigatorBar.listen(_handlerNavigatorBar);
+    _controllerRetornoAPI.listen(_handlerRetornoAPI);
+
+    _handlerInitApp();
+  }
+
+  /// Variaveis
   String _query;
 
   PageController get pageController { return _pageController; }
@@ -59,47 +96,7 @@ class ApplicationBloc implements Bloc {
     return 0;
   }
 
-  BehaviorSubject<AppRetornoModel> _controllerRetornoAPI;
-  Function(AppRetornoModel) get _changeAppRetorno { return _controllerRetornoAPI.add; }
-  Stream<AppRetornoModel> get streamRetornoAPI { return _controllerRetornoAPI.stream; }
-
-  BehaviorSubject<int> _controllerBottomNavigatorBar;
-  Function(int) get sinkBottomNavigatorBar { return _controllerBottomNavigatorBar.sink.add; }
-  Stream<int> get streamBottomNavigatorBar { return _controllerBottomNavigatorBar.stream; }
-
-  BehaviorSubject<int> _controllerTheme;
-  Function(int) get _sinkTheme { return _controllerTheme.sink.add; }
-  Stream<int> get streamTheme { return _controllerTheme.stream; }
-
-  BehaviorSubject<bool> _controllerHabilitarBtnAnterior;
-  Function(bool) get _changeHabilitarBtnAnterior { return _controllerHabilitarBtnAnterior.add; }
-  Stream<bool> get streamHabilitarBtnAnterior { return _controllerHabilitarBtnAnterior.stream; }
-
-  BehaviorSubject<bool> _controllerHabilitarBtnProximo;
-  Function(bool) get _changeHabilitarBtnProximo { return _controllerHabilitarBtnProximo.add; }
-  Stream<bool> get streamHabilitarBtnProximo { return _controllerHabilitarBtnProximo.stream; }
-
-  BehaviorSubject<String> _controllerPageFrom;
-  Function(String) get sinkBottomPageFrom { return _controllerPageFrom.sink.add; }
-  Stream<String> get streamPageFrom { return _controllerPageFrom.stream; }
-
-  ApplicationBloc() {
-    _controllerRetornoAPI = BehaviorSubject<AppRetornoModel>.seeded(AppRetornoModel(state: AppRetornoEnum.processando, data: null));
-    _controllerBottomNavigatorBar = BehaviorSubject<int>();
-    _controllerHabilitarBtnAnterior = BehaviorSubject<bool>.seeded(false);
-    _controllerHabilitarBtnProximo = BehaviorSubject<bool>.seeded(true);
-    _controllerPageFrom = BehaviorSubject<String>.seeded('');
-    _controllerTheme = BehaviorSubject<int>.seeded(ThemeEnum.escuro.index);
-
-    _pageController = PageController(initialPage: getListaScreenModel().first.position.index);
-    
-    _controllerBottomNavigatorBar.listen(_handlerNavigatorBar);
-    _loadTheme().then(attTheme);
-    _controllerRetornoAPI.listen(_handlerRetornoAPI);
-
-    _handlerInitApp();
-  }
-
+  /// Requisicao a API
   Future<bool> requestAPI([int page = 1]) async {
     try {
       _changeAppRetorno(AppRetornoModel(state: AppRetornoEnum.processando, data: _controllerRetornoAPI?.value?.data));
@@ -120,51 +117,7 @@ class ApplicationBloc implements Bloc {
     return false;
   }
 
-  void _handlerNavigatorBar(int value) {
-    print('teste');
-    if (value != null) {
-      _pageController?.jumpToPage(value);
-    }
-  }
-
-  ThemeData getThemeData(int codTheme) {
-    try {
-      if (codTheme != null && codTheme == ThemeEnum.escuro.index){
-        return ThemeHelper.instance.dark;
-      }
-    } catch(e){}
-    return ThemeHelper.instance.classic;
-  }
-
-  void attTheme(int codTheme){
-    if (codTheme != null){
-      _sinkTheme(codTheme);
-    }
-  }
-
-  Future<int> _loadTheme() async {
-    try {
-      final str = await SharedPreferencesHelper.instance.loadData(_keyTheme);
-      if (str != null && str.isNotEmpty) {
-        return int.parse(str);
-      }
-    } catch(e){}
-    return null;
-  }
-
-  List<ScreenModel> getListaScreenModel() {
-    return [
-      ScreenModel(ScreenEnum.movie, 'Filmes', FontAwesomeIcons.film),
-      ScreenModel(ScreenEnum.favorito, 'Favoritos', FontAwesomeIcons.solidHeart),
-    ];
-  }
-
-  ScreenModel getScreenModel(ScreenEnum screenEnum) {
-    return getListaScreenModel().firstWhere((value){
-      return value.position.index.compareTo(screenEnum.index) == 0;
-    }, orElse: () { return null; });
-  }
-
+  /// Handler
   void _handlerRetornoAPI(AppRetornoModel model) {
     if (model != null && model.state != null) {
       switch (model.state) {
@@ -196,6 +149,12 @@ class ApplicationBloc implements Bloc {
     });
   }
 
+  void _handlerNavigatorBar(int value) {
+    if (value != null) {
+      _pageController?.jumpToPage(value);
+    }
+  }
+
   void onPressedAnterior() {
     requestAPI(getPage != null ? (getPage - 1) : 1);
   }
@@ -209,14 +168,44 @@ class ApplicationBloc implements Bloc {
     return value != null && value is ResultModel;
   }
 
+  /// Favoritos
+  Future<bool> isFavoriteMovie(int idMovie) async {
+    return await MovieService.instance.isFavoriteMovie(idMovie);
+  }
+
+  void saveFavorite(MovieModel model) async {
+    MovieService.instance.saveOrDeleteFavorite(model).then((value){
+      _changeAttFavorite(true);
+    });
+  }
+
+  /// Thema
+  ThemeData getThemeData() {
+    return ThemeData.dark();
+  }
+
+  /// Screen
+  List<ScreenModel> getListaScreenModel() {
+    return [
+      ScreenModel(ScreenEnum.movie, 'Filmes', FontAwesomeIcons.film),
+      ScreenModel(ScreenEnum.favorito, 'Favoritos', FontAwesomeIcons.solidHeart),
+    ];
+  }
+
+  ScreenModel getScreenModel(ScreenEnum screenEnum) {
+    return getListaScreenModel().firstWhere((value){
+      return value.position.index.compareTo(screenEnum.index) == 0;
+    }, orElse: () { return null; });
+  }
+
   @override
   void dispose() async {
     await _controllerBottomNavigatorBar?.close();
-    await _controllerTheme?.close();
     await _controllerRetornoAPI?.close();
     await _controllerHabilitarBtnAnterior?.close();
     await _controllerHabilitarBtnProximo?.close();
     await _controllerPageFrom?.close();
+    await _controllerAttFavorite?.close();
     _pageController?.dispose();
   }
 }

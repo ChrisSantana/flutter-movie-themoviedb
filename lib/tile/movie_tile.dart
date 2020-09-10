@@ -1,10 +1,13 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:fluttermovie/bloc/application_bloc.dart';
 import 'package:fluttermovie/library/util.dart';
 import 'package:fluttermovie/model/movie_model.dart';
 import 'package:fluttermovie/repository/app_service.dart';
 import 'package:fluttermovie/tab/movie_tab.dart';
+import 'package:fluttermovie/widget/geral/factory_favorite_widget.dart';
+import 'package:provider/provider.dart';
 
 class MovieTile extends StatelessWidget {
   final MovieModel movieModel;
@@ -101,10 +104,16 @@ class MovieTile extends StatelessWidget {
   }
 
   Widget _buildFavoriteAndRating(BuildContext context) {
+    final bloc = Provider.of<ApplicationBloc>(context, listen: false);
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
-        IconButton(icon: Icon(Icons.favorite), onPressed: (){}),
+        IconButton(
+          icon: FactoryFavoriteWidget(movieModel.id, 18),
+          onPressed: (){
+            bloc.saveFavorite(movieModel);
+          },
+        ),
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 6),
           child: Text(

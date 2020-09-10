@@ -32,24 +32,19 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bloc = Provider.of<ApplicationBloc>(context);
-    return StreamBuilder<int>(
-      stream: bloc.streamTheme,
-      builder: (_, snapshot){
-        return MaterialApp(
-          localizationsDelegates: [
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-          ],
-          supportedLocales: [const Locale('pt', 'BR'),],
-          builder: BotToastInit(), //1. call BotToastInit
-          navigatorObservers: [BotToastNavigatorObserver()],
-          debugShowCheckedModeBanner: false,
-          theme: bloc.getThemeData(snapshot.data),
-          navigatorKey: AppService.instance.navigatorKey,
-          home: SplashScreen(),
-        );
-      },
+    return MaterialApp(
+      localizationsDelegates: [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: [const Locale('pt', 'BR'),],
+      builder: BotToastInit(), //1. call BotToastInit
+      navigatorObservers: [BotToastNavigatorObserver()],
+      debugShowCheckedModeBanner: false,
+      theme: bloc.getThemeData(),
+      navigatorKey: AppService.instance.navigatorKey,
+      home: SplashScreen(),
     );
   }
 }

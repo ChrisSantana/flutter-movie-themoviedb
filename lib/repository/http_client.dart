@@ -5,7 +5,7 @@ import 'package:fluttermovie/model/key_model.dart';
 import 'package:fluttermovie/repository/service_base.dart';
 import 'package:jwt_decode/jwt_decode.dart';
 
-import 'util.dart';
+import '../library/util.dart';
 
 const int receiveTimeout = 12000;
 const int connectTimeout = 10000;
@@ -19,13 +19,8 @@ class HttpClient implements ServiceBase {
   HttpClient._internal();
 
   Future<Response> get(String url, int page, String query) async {
-    final dio = await _instanceDio(page, query);
-    /// TODO retirar
-    print(dio.options.baseUrl);
-    print(url);
-    print(page);
-    print(dio.options.queryParameters);
     try {
+      final dio = await _instanceDio(page, query);
       return await dio.get(url);
     } on DioError catch (error) {
       print(error);
@@ -35,9 +30,9 @@ class HttpClient implements ServiceBase {
   }
 
   Future<Response> post(String url, String data) async {
-    if (data == null || data.isEmpty) return null;
-    final dio = await _instanceDio(1);
     try {
+      if (data == null || data.isEmpty) return null;
+      final dio = await _instanceDio(1);
       return await dio.post(url, data: data);
     } on DioError catch (error) {
       _buildException(error);
@@ -46,8 +41,8 @@ class HttpClient implements ServiceBase {
   }
 
   Future<Response> put(String url, String data) async {
-    final dio = await _instanceDio(1);
     try {
+      final dio = await _instanceDio(1);
       final response = await dio.put(url, data: data);
       if (response.data != null) {
         return response;

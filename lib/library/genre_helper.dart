@@ -156,7 +156,7 @@ class GenreHelper {
 
   GenreModel getGenre(int id) {
     return _listGenre.firstWhere((value){
-      return value.id == id;
+      return value.id.compareTo(id) == 0;
     }, orElse: (){
       return GenreModel(id: 0, name: 'Desconhecido');
     });
