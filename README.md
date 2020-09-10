@@ -46,6 +46,47 @@ Os tiles são Widgtes reusáveis em screen, tab ou em outros Widgtes. Úteis par
 - Widget:
 Nesse diretório estão os Widgets, os quais, podem ser utilizados/reusáveis em screen, tabs ou em outros Widgets.
 
+## Plugin/Package
+- Animated Text kit (2.2.0)
+
+Um pacote que disponibiliza animações de texto
+
+- BotToast (3.0.4)
+
+Plugin para envio de alert, toast e notificação em tela
+
+- Dio (3.0.10)
+
+Cliente Http para Dart, que suporta interceptores, configuração global, FormData, cancelamento de solicitação, download de arquivo, tempo limite etc
+
+- Intl (0.16.1)
+
+Pacote com recursos essenciais para internacionalização e conversões de moeda, data, etc
+
+- Font Awesome (8.8.1)
+
+Disponibiliza ícones da galeria do site FontAwesome
+
+- Jwt Decode (0.1.0)
+
+Biblioteca com recursos para decodificar Jsonwebtokens
+
+- Package Info: (0.4.1)
+
+Permite acessar recursos quanto as informações da versão do aplicativo, app name e package name
+  
+- Provider (4.3.2)
+
+Pacote que permite tornar Widgets reutilizáveis, aplicar injeção de dependência e gerenciar o estado da  aplicação
+  
+- RxDart (0.24.1)
+
+RxDart adiciona recursos adicionais para Dart Streams e StreamControllers, permitindo gerenciar o estado, trabalhar com os conceitos de programação reativa e sob o padrão de projeto Observable
+
+- Shared Preferences (0.5.8)
+
+Plugin que permite ler e escrever pares de valores e chave de maneira simples
+
 ## Configuração
 
 Baixe o SDK do [Flutter](https://flutter.dev/docs/get-started/install/windows) específico para o Windows e extraia o arquivo zip em um diretório do seu interesse. Exemplo: c:\src\flutter.
