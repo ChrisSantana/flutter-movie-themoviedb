@@ -1,5 +1,14 @@
 # Flutter Movie The Movie DB
-Projeto Flutter base com bottom-navigator
+Aplicação desenvolvida sob o framework flutter para consumir e exibir filmes da API The Movie Db
+
+## Imagens
+
+<img align="left" src="screenshots/screenshot_1.png" height="400" alt="Splash Screen" hspace="20"/>
+<img align="left" src="screenshots/screenshot_2.png" height="400" alt="Filmes" hspace="20"/>
+<img src="screenshots/screenshot_3.png" height="400" alt="Detalhes do Filme" hspace="20"/>
+
+<img align="left" src="screenshots/screenshot_4.png" height="400" alt="Pesquisando Filme" hspace="20"/>
+<img src="screenshots/screenshot_5.png" height="400" alt="Favoritos" hspace="20"/>
 
 ## Estrutura do Projeto
 
@@ -9,10 +18,6 @@ esta estruturado da seguinte forma:
 - Bloc:
 Diretório com as classes responsáveis pela camada lógica, gerenciamento de estado, que se comunica com a view e
 seus respectivos repositorys.
-
-- Data:
-Diretório que armazena dados fictícios ou storages locais que são abertos com a aplicação
-sem a necessidade de estar em um servidor externo, por exemplo.
 
 - Enums:
 Os enums são arquivos que configuram dados essências para a aplicação e são imutáveis.
@@ -30,6 +35,10 @@ Nesse diretório estão os arquivos do tipo service que fazem comunicação com 
 - Screen:
 O diretório Screen compõe os Widgets responsáveis pelas telas da aplicação. o sufixo _screen define que
 o Widget é uma tela, já o sufixo _tab define que o Widget é uma aba de uma tela específica, ou seja, uma subtela de uma screen.
+
+- Tab:
+O diretório Tab compõe os Widgets responsáveis pelas sub-telas da aplicação. Enquanto o sufixo _screen define que
+o Widget é uma tela, o sufixo _tab define que o Widget é uma aba de uma tela específica, ou seja, uma sub-tela de uma determinada screen.
 
 - Tile:
 Os tiles são Widgtes reusáveis em screen, tab ou em outros Widgtes. Úteis para ser exibidos em uma lista, card, etc.
@@ -52,7 +61,18 @@ Observação: Não instale o Flutter em um diretório que exija privilégios.
 
 [Flutter Tutorial](https://flutter.dev/docs/cookbook)
 
+## Building
 
+Obtenha a lista de packages
+
+```bash
+flutter pub get
+```
+
+Execute em dispositivo ou emulador
+```bash
+flutter run
+```
 
 ## Copyright ©
 
