@@ -1,0 +1,4 @@
+enum ThemeEnum {
+  claro,
+  escuro,
+}
